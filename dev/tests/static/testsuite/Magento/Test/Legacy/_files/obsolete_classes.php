@@ -4212,4 +4212,5 @@ return [
     ['Magento\Framework\Acl\CacheInterface'],
     ['Magento\Framework\Acl\Test\Unit\CacheTest'],
     ['Magento\Eav\Model\Entity\Attribute\Backend\Serialized'],
+    ['Zend_Json', 'Magento\Framework\Serialize\Serializer\Json']
 ];

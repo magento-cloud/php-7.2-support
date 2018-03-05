@@ -18,15 +18,26 @@ class Encoder implements EncoderInterface
     protected $translateInline;
 
     /**
-     * @param \Magento\Framework\Translate\InlineInterface $translateInline
+     * @var \Magento\Framework\Serialize\Serializer\Json
      */
-    public function __construct(\Magento\Framework\Translate\InlineInterface $translateInline)
-    {
+    private $jsonSerializer;
+
+    /**
+     * @param \Magento\Framework\Translate\InlineInterface $translateInline
+     * @param \Magento\Framework\Serialize\Serializer\Json $jsonSerializer
+     */
+    public function __construct(
+        \Magento\Framework\Translate\InlineInterface $translateInline,
+        \Magento\Framework\Serialize\Serializer\Json $jsonSerializer
+    ) {
         $this->translateInline = $translateInline;
+        $this->jsonSerializer = $jsonSerializer;
     }
 
     /**
      * Encode the mixed $data into the JSON format.
+     *
+     * Return the string 'null' if encoding fails in order to emulate the behavior of previous Zend_Json encoder.
      *
      * @param mixed $data
      * @return string
@@ -34,6 +45,10 @@ class Encoder implements EncoderInterface
     public function encode($data)
     {
         $this->translateInline->processResponseBody($data);
-        return \Zend_Json::encode($data);
+        try {
+            return $this->jsonSerializer->serialize($data);
+        } catch (\InvalidArgumentException $e) {
+            return 'null';
+        }
     }
 }
